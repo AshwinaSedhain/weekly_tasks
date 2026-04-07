@@ -1,0 +1,18 @@
+
+Internship Syllabus Tracker
+
+A PostgreSQL-based tracking system designed to manage and monitor progress through a structured technical internship. It provides a centralized view of modules, topics, and real-time completion status.
+
+Database Implementation:
+The system is implemented in PostgreSQL using pgAdmin, featuring a structured schema to organize the learning roadmap:
+
+Categorization: Topics are organized by week_num and module_name (e.g., Database, Data Science).
+
+Progress Management: A status field tracks three distinct states: Pending, In Progress, and Completed.
+
+Audit Logging: An updated_at timestamp automatically tracks when a topic's status was last modified.
+
+Data Integrity: Utilizes unique identifiers (id) and optimized data types (varchar, text) for efficient storage.
+
+Core Functionality:
+Reporting: Allows for easy querying of completed vs. pending milestones to ensure the syllabus remains on schedule.
