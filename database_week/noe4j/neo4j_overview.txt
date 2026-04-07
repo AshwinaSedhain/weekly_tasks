@@ -1,0 +1,33 @@
+The implementation was done using neo4j desktop.
+# Social Circle Graph Network 
+
+A graph-based social network simulation built using **Neo4j** and **Cypher**. This project explores how graph databases handle complex, multi-degree relationships like "Friends of Friends" and skill-based professional networking.
+
+## Overview
+Traditional relational databases (SQL) require heavy JOIN operations to find deep connections. This project utilizes Neo4j's native graph engine to visualize and query a social ecosystem consisting of People, Skills, and Companies.
+
+## 🛠 Tech Stack
+- **Database:** Neo4j (Graph Database)
+- **Query Language:** Cypher
+- **Environment:** Neo4j Desktop
+- **Visualization:** Neo4j Browser
+
+## Data Model (Schema)
+The graph consists of three primary labels:
+- **`:Person`**: Attributes like `name`, `city`, and `level`.
+- **`:Skill`**: Technical competencies like `Neo4j`, `Python`, and `Arch Linux`.
+- **`:Company`**: Professional entities where people work.
+
+### Relationships:
+- `(:Person)-[:FRIEND]->(:Person)` (Social connections)
+- `(:Person)-[:HAS_SKILL]->(:Skill)` (Knowledge mapping)
+- `(:Person)-[:WORKS_AT]->(:Company)` (Employment mapping)
+
+##  Key Cypher Queries
+
+### 1. Friend-of-a-Friend (Discovery)
+Find people you aren't connected to yet, but who are friends with your friends:
+```cypher
+MATCH (me:Person {name: "Ashwini"})-[:FRIEND]->(myFriend)-[:FRIEND]->(fof)
+WHERE NOT (me)-[:FRIEND]->(fof) AND me <> fof
+RETURN fof.name AS Suggested_Connection
