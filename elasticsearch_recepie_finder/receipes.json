@@ -1,0 +1,14 @@
+[
+  {"id":1,"name":"Dal Bhat Tarkari","description":"Nepali staple - lentil curry with rice and veggie curry","ingredients":["lentils","rice","potato","spinach","onion","tomato","ginger","garlic","turmeric"],"cuisine":"Nepali","difficulty":"easy","prep_time":15,"cook_time":30,"rating":4.7},
+  {"id":2,"name":"Momo","description":"Nepali dumplings with spicy tomato chutney","ingredients":["flour","chicken","onion","ginger","garlic","cumin","tomato","chili"],"cuisine":"Nepali","difficulty":"medium","prep_time":30,"cook_time":20,"rating":4.8},
+  {"id":3,"name":"Gundruk","description":"Fermented leafy greens - Nepali superfood","ingredients":["gundruk","onion","tomato","chili","garlic","fenugreek"],"cuisine":"Nepali","difficulty":"easy","prep_time":10,"cook_time":25,"rating":4.5},
+  {"id":4,"name":"Aloo Tama","description":"Potato and bamboo shoot curry","ingredients":["potato","bamboo shoot","black eyed beans","onion","tomato","cumin"],"cuisine":"Nepali","difficulty":"medium","prep_time":20,"cook_time":35,"rating":0.0},
+  {"id":5,"name":"Chicken Chili","description":"Spicy Nepali style chicken chili","ingredients":["chicken","onion","green chili","bell pepper","soy sauce","honey"],"cuisine":"Nepali","difficulty":"easy","prep_time":15,"cook_time":20,"rating":4.4},
+  {"id":6,"name":"Thukpa","description":"Nepali noodle soup","ingredients":["noodles","chicken","carrot","cabbage","spring onion","chili"],"cuisine":"Nepali","difficulty":"medium","prep_time":20,"cook_time":25,"rating":4.6},
+  {"id":7,"name":"Sel Roti","description":"Rice flour doughnut - festival special","ingredients":["rice flour","sugar","ghee","cardamom","banana"],"cuisine":"Nepali","difficulty":"hard","prep_time":25,"cook_time":15,"rating":4.3},
+  {"id":8,"name":"Kwati","description":"Nine bean soup - healthy Nepali dish","ingredients":["mixed beans","onion","ginger","garlic","cumin","turmeric"],"cuisine":"Nepali","difficulty":"medium","prep_time":20,"cook_time":40,"rating":4.5},
+  {"id":9,"name":"Chhurpi","description":"Hard yak cheese - Himalayan snack","ingredients":["yak milk","salt"],"cuisine":"Nepali","difficulty":"easy","prep_time":5,"cook_time":0,"rating":4.2},
+  {"id":10,"name":"Sukuti","description":"Dried buffalo meat with chutney","ingredients":["buffalo meat","chili","onion","tomato","fenugreek"],"cuisine":"Nepali","difficulty":"hard","prep_time":30,"cook_time":120,"rating":4.7},
+  {"id":11,"name":"Chatamari","description":"Nepali rice crepe with toppings","ingredients":["rice flour","egg","chicken","onion","tomato"],"cuisine":"Nepali","difficulty":"medium","prep_time":20,"cook_time":15,"rating":4.4},
+  {"id":12,"name":"Yomari","description":"Steamed rice flour dumpling with molasses","ingredients":["rice flour","molasses","coconut"],"cuisine":"Nepali","difficulty":"hard","prep_time":30,"cook_time":20,"rating":4.6}
+]
