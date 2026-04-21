@@ -14,7 +14,7 @@ I integrated Mixpanel into a project management app to track user behavior and p
 
 >Workspace, project, and task creation
 
->Task completion, updates, and deletion
+>Task completion, updates, and deletiongit
 
 >Filter changes and task assignments
 
