@@ -1,18 +1,31 @@
-# Python cache files
-__pycache__/
 
-# Virtual environment
+# Python
+
+__pycache__/
+*.pyc
+
+# Virtual environments
 venv/
 env/
 .venv/
 
-# Jupyter notebooks checkpoints
+# Jupyter
 .ipynb_checkpoints/
 
-# Data files (IMPORTANT for your case)
-data/
-*.csv
 
+# Data files
+
+data/
+
+# CSVs
+# *.csv
+
+
+# Spark / Big Data outputs
+
+BIG_DATA_VITESSE/output/
+*.crc
+_SUCCESS
 
 # Logs
 *.log
@@ -20,3 +33,6 @@ data/
 # OS files
 .DS_Store
 Thumbs.db
+
+#datasets
+BigData_implementation/big-data-pipeline/datasets/

@@ -1,0 +1,85 @@
+
+        HOW TO RUN — Real-Time User Activity Processing System
+
+firstly you have to :
+  - Download Kafka  and extract it: 
+
+###  OPEN 5 TERMINALS — Run one command in each, IN ORDER
+
+
+# TERMINAL 1 — Start Zookeeper
+
+~/Downloads/kafka_2.13-3.7.0/bin/zookeeper-server-start.sh ~/Downloads/kafka_2.13-3.7.0/config/zookeeper.properties
+
+   Wait for: "binding to port 0.0.0.0/0.0.0.0:2181"
+  Keep this terminal running. Do not close it.
+
+# TERMINAL 2 — Start Kafka Broker
+
+~/Downloads/kafka_2.13-3.7.0/bin/kafka-server-start.sh ~/Downloads/kafka_2.13-3.7.0/config/server.properties
+
+   Wait for: "[KafkaServer id=0] started"
+   Keep this terminal running. Do not close it.
+
+# TERMINAL 3 — Create Topic + Start Producer
+
+-- Step 1 (run once to create topic):
+~/Downloads/kafka_2.13-3.7.0/bin/kafka-topics.sh --create --topic user_events --bootstrap-server localhost:9092 --partitions 3 --replication-factor 1
+
+-- Step 2 (start the producer):
+cd ~/Downloads/BIG_DATA_VITESSE && source venv/bin/activate && python producer.py
+
+   You will see events printing continuously:
+      [1] Sent: user_007 | click    | 2026-04-29T...
+      [2] Sent: user_012 | purchase | 2026-04-29T...
+   Keep this terminal running. Do not close it.
+
+
+# TERMINAL 4 — Start Spark Streaming (Speed Layer)
+
+cd ~/Downloads/BIG_DATA_VITESSE && source venv/bin/activate && spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0 spark_streaming.py
+
+   Wait some seconds for Spark to start.
+   You will see windowed tables printing every 10 seconds:
+      +------------------------------------------+--------+----------+-----------+
+      |window                                    |user_id |event_type|event_count|
+      +------------------------------------------+--------+----------+-----------+
+      |{2026-04-29 08:01:00, 2026-04-29 08:01:10}|user_009|purchase  |1          |
+      +------------------------------------------+--------+----------+-----------+
+   Keep this terminal running.
+
+
+# TERMINAL 5 — Run Spark Batch Job (Batch Layer)
+   Run this AFTER producer has been running for at least 1-2 minutes.
+
+cd ~/Downloads/BIG_DATA_VITESSE && source venv/bin/activate && spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0 spark_batch.py
+
+   You will see 3 result tables printed:
+      - User Activity Summary  (total events, purchases, logins, clicks per user)
+      - Event Type Breakdown   (click / login / purchase counts)
+      - Top Pages              (most visited pages)
+   CSV files saved to: ~/Downloads/BIG_DATA_VITESSE/output/batch_results/
+
+
+TO STOP EVERYTHING:
+  - Terminal 3 (Producer)  → Ctrl+C
+  - Terminal 4 (Streaming) → Ctrl+C
+  - Terminal 2 (Kafka)     → Ctrl+C
+  - Terminal 1 (Zookeeper) → Ctrl+C
+
+TO RUN AGAIN (next time):
+  - Terminals 1 and 2: same commands (Zookeeper + Kafka)
+  - Terminal 3: skip topic creation (already exists), just run producer.py
+  - Terminal 4: same spark-submit command
+  - Terminal 5: same spark-submit command
+
+
+OUTPUT FILES LOCATION
+
+/BIG_DATA_VITESSE/output/batch_results/user_summary/
+/BIG_DATA_VITESSE/output/batch_results/event_breakdown/
+/BIG_DATA_VITESSE/output/batch_results/top_pages/
+
+  Each folder contains a .csv file that can be opened in Excel or any BI tool.
+
+
