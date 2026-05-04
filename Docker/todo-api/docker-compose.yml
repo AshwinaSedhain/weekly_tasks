@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+
+  # defining the API service
+  api:
+    build: .
+    container_name: todo_api
+    ports:
+      - "8000:8000"
+    environment:
+      # pointing the app to the postgres database using the service name "db"
+      - DATABASE_URL=postgresql://todo_user:todo_pass@db:5432/todo_db
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # mounting app code for easy development (optional in production)
+      - .:/app
+
+  # defining the PostgreSQL database service
+  db:
+    image: postgres:15-alpine
+    container_name: todo_db
+    environment:
+      POSTGRES_USER: todo_user
+      POSTGRES_PASSWORD: todo_pass
+      POSTGRES_DB: todo_db
+    ports:
+      - "5433:5432"
+    volumes:
+      # persisting database data so it survives container restarts
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # checking if postgres is ready before starting the API
+      test: ["CMD-SHELL", "pg_isready -U todo_user -d todo_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+# declaring the named volume for database persistence
+volumes:
+  postgres_data:
