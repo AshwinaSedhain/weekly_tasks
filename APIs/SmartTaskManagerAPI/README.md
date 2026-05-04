@@ -168,8 +168,3 @@ The `/health` endpoint returns `{"status": "ok"}` and does not require authentic
 curl http://127.0.0.1:8000/health
 ```
 
----
-
-## License
-
-MIT
