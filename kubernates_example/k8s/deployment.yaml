@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-demo
+  labels:
+    app: fastapi-demo
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: fastapi-demo
+
+  # Rolling update strategy – zero downtime
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        # one extra pod allowed during update
+      maxUnavailable: 0  # never go below desired replica count
+
+  template:
+    metadata:
+      labels:
+        app: fastapi-demo
+    spec:
+      containers:
+        - name: fastapi-demo
+          image: fastapi-demo:v1   # built locally via Minikube / Kind
+          imagePullPolicy: Never   # use local image; change to IfNotPresent for a registry
+          ports:
+            - containerPort: 8000
+
+          #  Environment from ConfigMap 
+          envFrom:
+            - configMapRef:
+                name: fastapi-config
+
+          # Resource limits 
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "250m"
+              memory: "128Mi"
+
+          #  Liveness probe 
+          # Restarts the container if it stops responding
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+
+          #  Readiness probe 
+          # Removes the pod from Service endpoints until it is truly ready
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
