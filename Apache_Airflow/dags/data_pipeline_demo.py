@@ -70,9 +70,7 @@ with DAG(
     tags=["demo", "weather", "pipeline"],
 ) as dag:
 
-    # -------------------------------------------------------------------
     # TASK 1 — fetch_data (PythonOperator)
-    # -------------------------------------------------------------------
 
     # Defining the function that is fetching live weather data from the
     # Open-Meteo API. This function is making an HTTP GET request to the
@@ -129,9 +127,7 @@ with DAG(
         python_callable=fetch_data,
     )
 
-    # -------------------------------------------------------------------
     # TASK 2 — process_data (PythonOperator)
-    # -------------------------------------------------------------------
 
     # Defining the function that is reading the raw weather data and
     # transforming it into something more useful. This function is pulling
@@ -219,10 +215,8 @@ with DAG(
         python_callable=process_data,
     )
 
-    # -------------------------------------------------------------------
     # TASK 3 — save_data (PythonOperator)
-    # -------------------------------------------------------------------
-
+ 
     # Defining the function that is simulating saving data to a database.
     # Instead of a real database, we are appending each processed record
     # as a new line in a .ndjson file (newline-delimited JSON). This is a
@@ -272,9 +266,7 @@ with DAG(
         python_callable=save_data,
     )
 
-    # -------------------------------------------------------------------
     # TASK 4 — generate_report (PythonOperator)
-    # -------------------------------------------------------------------
 
     # Defining the function that is building the final human-readable
     # report. This function is pulling the statistics and total record
@@ -338,10 +330,8 @@ with DAG(
         python_callable=generate_report,
     )
 
-    # -------------------------------------------------------------------
     # BONUS TASK 5 — notify_success (BashOperator)
-    # -------------------------------------------------------------------
-
+ 
     # Using a BashOperator to simulate sending a success notification
     # after the pipeline finishes. This task is reading the report file
     # using the cat command and printing it to the Airflow log along with
