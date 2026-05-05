@@ -1,0 +1,10 @@
+# Airflow runtime files (auto-generated, not source code)
+airflow_home/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Temp pipeline output files
+/tmp/airflow_demo/

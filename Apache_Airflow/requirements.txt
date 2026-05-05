@@ -1,0 +1,4 @@
+# Python dependencies for the data_pipeline_demo DAG
+# Install with:  pip install -r requirements.txt
+apache-airflow==2.9.1
+requests==2.31.0
