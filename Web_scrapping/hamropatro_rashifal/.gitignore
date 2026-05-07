@@ -1,0 +1,25 @@
+# Python virtual environment
+venv/
+env/
+.env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Scraped output data
+data/
+
+# Log file generated on each run
+scraper.log
+
+# Environment variables file
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE folders
+.vscode/
+.idea/
