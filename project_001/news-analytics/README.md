@@ -16,23 +16,6 @@ The second source is Hacker News, which is available at https://news.ycombinator
 
 Both sources return data in different formats. We normalize everything into the same standard article shape so the rest of the pipeline does not need to know which source an article came from.
 
-## System Architecture and Data Flow
-
-The diagram below shows how data moves through the entire system from collection to display.
-
-```
-NewsAPI  ──┐
-           ├──> NewsCollector ──> Kafka (raw-news) ──> Spark Streaming ──> Kafka (processed-news)
-HackerNews─┘                           │                                          │
-                                       │                                          ├──> PostgreSQL
-                                  MongoDB                                         └──> PostgreSQL
-                                 (raw storage)
-                                                                                  FastAPI Backend
-                                                                                        │
-                                                                                 Dash Dashboard
-```
-
-The collection layer fetches articles from both sources and stores raw documents in MongoDB. Kafka acts as the message bus carrying articles from the collector to the Spark job. Spark cleans the text and writes processed articles to PostgreSQL. The FastAPI backend reads from PostgreSQL and MongoDB to serve the dashboard. The dashboard polls the API every 30 seconds and renders live charts.
 
 ## How the System Works Step by Step
 
