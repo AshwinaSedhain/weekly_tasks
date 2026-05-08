@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark
+  namespace: news-analytics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark
+  template:
+    metadata:
+      labels:
+        app: spark
+    spec:
+      containers:
+        - name: spark
+          image: your-dockerhub-username/news-analytics-spark:latest
+          command:
+            - /opt/spark/bin/spark-submit
+            - --master
+            - local[2]
+            - --packages
+            - org.apache.spark:spark-sql-kafka-0-10_2.12:3.4.1,org.postgresql:postgresql:42.6.0
+            - /opt/spark-app/spark/stream_processor.py
+          envFrom:
+            - configMapRef:
+                name: news-analytics-config
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: news-analytics-secrets
+                  key: POSTGRES_PASSWORD
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"

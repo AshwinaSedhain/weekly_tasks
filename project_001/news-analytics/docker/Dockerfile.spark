@@ -1,0 +1,20 @@
+FROM apache/spark:3.4.1
+
+USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --no-cache-dir \
+    kafka-python==2.0.2 \
+    psycopg2-binary==2.9.9 \
+    pymongo==4.6.1
+
+COPY spark/ /opt/spark-app/spark/
+COPY kafka/ /opt/spark-app/kafka/
+
+ENV PYTHONPATH=/opt/spark-app
+ENV PYSPARK_PYTHON=python3
+
+USER 185

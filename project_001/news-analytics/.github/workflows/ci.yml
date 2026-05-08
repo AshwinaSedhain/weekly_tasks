@@ -1,0 +1,207 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+
+  lint-and-test:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: newsdb_test
+          POSTGRES_USER: newsuser
+          POSTGRES_PASSWORD: newspass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      mongo:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checking out repository
+        uses: actions/checkout@v4
+
+      - name: Setting up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installing dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements/test.txt
+          pip install flake8 mypy
+
+      - name: Running flake8 linter
+        run: |
+          flake8 scraper/ kafka/ api/ ml/ dashboard/ \
+            --max-line-length=100 \
+            --exclude=__pycache__,.git
+
+      - name: Running pytest unit tests
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_DB: newsdb_test
+          POSTGRES_USER: newsuser
+          POSTGRES_PASSWORD: newspass
+          MONGO_URI: mongodb://localhost:27017
+          NEWSAPI_KEY: test_key
+          KAFKA_BOOTSTRAP_SERVERS: localhost:9092
+        run: |
+          pytest tests/unit/ -v --tb=short
+
+      - name: Running pytest integration tests
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_DB: newsdb_test
+          POSTGRES_USER: newsuser
+          POSTGRES_PASSWORD: newspass
+          MONGO_URI: mongodb://localhost:27017
+          NEWSAPI_KEY: test_key
+          KAFKA_BOOTSTRAP_SERVERS: localhost:9092
+        run: |
+          pytest tests/integration/ -v --tb=short
+
+  build-and-push:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checking out repository
+        uses: actions/checkout@v4
+
+      - name: Logging in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Setting up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Building and pushing API image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.api
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/news-analytics-api:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/news-analytics-api:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Building and pushing Dashboard image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.dashboard
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/news-analytics-dashboard:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/news-analytics-dashboard:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Building and pushing Spark image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.spark
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/news-analytics-spark:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/news-analytics-spark:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Building and pushing Airflow image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.airflow
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/news-analytics-airflow:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/news-analytics-airflow:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checking out repository
+        uses: actions/checkout@v4
+
+      - name: Setting up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "v1.28.0"
+
+      - name: Configuring kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+
+      - name: Applying Kubernetes namespace
+        run: kubectl apply -f kubernetes/namespace.yaml
+
+      - name: Applying Kubernetes configmap
+        run: kubectl apply -f kubernetes/configmap.yaml
+
+      - name: Applying Kubernetes secrets
+        run: kubectl apply -f kubernetes/secrets.yaml
+
+      - name: Deploying databases
+        run: |
+          kubectl apply -f kubernetes/postgres-deployment.yaml
+          kubectl apply -f kubernetes/mongo-deployment.yaml
+
+      - name: Deploying Kafka
+        run: kubectl apply -f kubernetes/kafka-deployment.yaml
+
+      - name: Deploying application services
+        run: |
+          kubectl apply -f kubernetes/api-deployment.yaml
+          kubectl apply -f kubernetes/dashboard-deployment.yaml
+          kubectl apply -f kubernetes/spark-deployment.yaml
+          kubectl apply -f kubernetes/airflow-deployment.yaml
+
+      - name: Updating image tags to current commit
+        run: |
+          kubectl set image deployment/api \
+            api=${{ secrets.DOCKERHUB_USERNAME }}/news-analytics-api:${{ github.sha }} \
+            -n news-analytics
+          kubectl set image deployment/dashboard \
+            dashboard=${{ secrets.DOCKERHUB_USERNAME }}/news-analytics-dashboard:${{ github.sha }} \
+            -n news-analytics
+
+      - name: Verifying rollout
+        run: |
+          kubectl rollout status deployment/api -n news-analytics
+          kubectl rollout status deployment/dashboard -n news-analytics

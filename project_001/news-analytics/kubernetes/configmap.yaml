@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: news-analytics-config
+  namespace: news-analytics
+data:
+  KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
+  POSTGRES_HOST: "postgres-service"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "newsdb"
+  POSTGRES_USER: "newsuser"
+  MONGO_URI: "mongodb://mongo-service:27017"
+  MONGO_DB: "newsdb"
+  API_BASE_URL: "http://api-service:8000"

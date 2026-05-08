@@ -1,0 +1,47 @@
+# Environment variables - never commit this file
+.env
+
+# Python compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Pytest and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# MyPy
+.mypy_cache/
+
+# Spark checkpoints and logs
+/tmp/spark-checkpoints/
+spark-warehouse/
+derby.log
+
+# Docker
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kubernetes real secrets (keep the example template, ignore real values)
+kubernetes/secrets-real.yaml

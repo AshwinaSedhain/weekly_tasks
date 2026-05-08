@@ -1,0 +1,18 @@
+FROM apache/airflow:2.8.0-python3.11
+
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+USER airflow
+
+COPY requirements/airflow.txt /requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt
+
+COPY scraper/ /opt/airflow/project/scraper/
+COPY api/ /opt/airflow/project/api/
+COPY ml/ /opt/airflow/project/ml/
+COPY airflow/dags/ /opt/airflow/dags/
+
+ENV PYTHONPATH=/opt/airflow/project
