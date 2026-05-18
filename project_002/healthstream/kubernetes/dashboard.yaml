@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthstream-dashboard
+  namespace: healthstream
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthstream-dashboard
+  template:
+    metadata:
+      labels:
+        app: healthstream-dashboard
+    spec:
+      containers:
+        - name: dashboard
+          image: healthstream/dashboard:latest
+          imagePullPolicy: Always
+          env:
+            - name: API_BASE_URL
+              value: http://healthstream-api:8000
+            - name: REFRESH_INTERVAL
+              value: "30"
+          ports:
+            - containerPort: 8501
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthstream-dashboard
+  namespace: healthstream
+spec:
+  selector:
+    app: healthstream-dashboard
+  ports:
+    - port: 8501
+      targetPort: 8501
+  type: LoadBalancer

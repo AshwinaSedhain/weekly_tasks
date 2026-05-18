@@ -1,0 +1,7 @@
+pyspark==3.5.1
+kafka-python==2.0.2
+psycopg2-binary==2.9.9
+scikit-learn==1.4.1.post1
+numpy==1.26.4
+pandas==2.2.1
+python-dotenv==1.0.1
