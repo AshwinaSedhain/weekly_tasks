@@ -1,6 +1,6 @@
 # Healthstream
 
-Healthstream is a production-style data engineering project that simulates how large healthcare companies process medical insurance claims data every day. The idea behind this project is to build a complete end-to-end data pipeline that mirrors what companies like Cedar Gate Technologies actually do in the real world. Instead of using real patient data, which is protected by privacy laws, the system generates realistic fake data using Python and processes it through a full enterprise-grade technology stack.
+Healthstream is a production-style data engineering project that simulates how large healthcare companies process medical insurance claims data every day. The idea behind this project is to build a complete end-to-end data pipeline that mirrors what companies actually do in the real world. Instead of using real patient data, which is protected by privacy laws, the system generates realistic fake data using Python and processes it through a full enterprise-grade technology stack.
 
 The project demonstrates real data engineering skills including real-time streaming, batch processing, data warehousing, REST API development, dashboard visualization, machine learning for fraud detection, and containerized deployment using Docker. Every component in this system is a technology used by actual companies in production environments.
 
